@@ -1,0 +1,133 @@
+CREATE (:Genre)<-[:In_Genre]-(:Series)<-[:Watched {Rating: ""}]-(:User)-[:Watched {Rating: ""}]->(:Movie)-[:In_Genre]->(g:Genre),
+(:Movie)-[:Acted_in]->(:Actor)<-[:Acted_in]-(:Series)-[:Directed]->(:Diretor)<-[:Directed]-(:Movie)
+
+// ===== GENEROS =====
+CREATE
+(g1:Genre {name:"Action"}),
+(g2:Genre {name:"Drama"}),
+(g3:Genre {name:"Comedy"}),
+(g4:Genre {name:"Sci-Fi"}),
+(g5:Genre {name:"Horror"}),
+(g6:Genre {name:"Romance"}),
+(g7:Genre {name:"Thriller"}),
+(g8:Genre {name:"Fantasy"}),
+(g9:Genre {name:"Documentary"}),
+(g10:Genre {name:"Adventure"})
+
+// ===== ATORES =====
+CREATE
+(a1:Actor {name:"Actor 1"}),
+(a2:Actor {name:"Actor 2"}),
+(a3:Actor {name:"Actor 3"}),
+(a4:Actor {name:"Actor 4"}),
+(a5:Actor {name:"Actor 5"}),
+(a6:Actor {name:"Actor 6"}),
+(a7:Actor {name:"Actor 7"}),
+(a8:Actor {name:"Actor 8"}),
+(a9:Actor {name:"Actor 9"}),
+(a10:Actor {name:"Actor 10"})
+
+// ===== DIRETORES =====
+CREATE
+(d1:Diretor {name:"Director 1"}),
+(d2:Diretor {name:"Director 2"}),
+(d3:Diretor {name:"Director 3"}),
+(d4:Diretor {name:"Director 4"}),
+(d5:Diretor {name:"Director 5"}),
+(d6:Diretor {name:"Director 6"}),
+(d7:Diretor {name:"Director 7"}),
+(d8:Diretor {name:"Director 8"}),
+(d9:Diretor {name:"Director 9"}),
+(d10:Diretor {name:"Director 10"})
+
+// ===== USUARIOS =====
+CREATE
+(u1:User {name:"User 1"}),
+(u2:User {name:"User 2"}),
+(u3:User {name:"User 3"}),
+(u4:User {name:"User 4"}),
+(u5:User {name:"User 5"}),
+(u6:User {name:"User 6"}),
+(u7:User {name:"User 7"}),
+(u8:User {name:"User 8"}),
+(u9:User {name:"User 9"}),
+(u10:User {name:"User 10"})
+
+// ===== FILMES =====
+CREATE
+(m1:Movie {title:"Movie 1"}),
+(m2:Movie {title:"Movie 2"}),
+(m3:Movie {title:"Movie 3"}),
+(m4:Movie {title:"Movie 4"}),
+(m5:Movie {title:"Movie 5"}),
+(m6:Movie {title:"Movie 6"}),
+(m7:Movie {title:"Movie 7"}),
+(m8:Movie {title:"Movie 8"}),
+(m9:Movie {title:"Movie 9"}),
+(m10:Movie {title:"Movie 10"})
+
+// ===== SERIES =====
+CREATE
+(s1:Series {title:"Series 1"}),
+(s2:Series {title:"Series 2"}),
+(s3:Series {title:"Series 3"}),
+(s4:Series {title:"Series 4"}),
+(s5:Series {title:"Series 5"}),
+(s6:Series {title:"Series 6"}),
+(s7:Series {title:"Series 7"}),
+(s8:Series {title:"Series 8"}),
+(s9:Series {title:"Series 9"}),
+(s10:Series {title:"Series 10"})
+
+// ===== RELACIONAMENTOS PRINCIPAIS =====
+CREATE
+
+// Filmes em gêneros
+(m1)-[:In_Genre]->(g1),
+(m2)-[:In_Genre]->(g2),
+(m3)-[:In_Genre]->(g3),
+(m4)-[:In_Genre]->(g4),
+(m5)-[:In_Genre]->(g5),
+(m6)-[:In_Genre]->(g6),
+(m7)-[:In_Genre]->(g7),
+(m8)-[:In_Genre]->(g8),
+(m9)-[:In_Genre]->(g9),
+(m10)-[:In_Genre]->(g10),
+
+// Séries em gêneros
+(s1)-[:In_Genre]->(g1),
+(s2)-[:In_Genre]->(g2),
+(s3)-[:In_Genre]->(g3),
+(s4)-[:In_Genre]->(g4),
+(s5)-[:In_Genre]->(g5),
+(s6)-[:In_Genre]->(g6),
+(s7)-[:In_Genre]->(g7),
+(s8)-[:In_Genre]->(g8),
+(s9)-[:In_Genre]->(g9),
+(s10)-[:In_Genre]->(g10),
+
+// Usuários assistindo
+(u1)-[:Watched {Rating:"5"}]->(m1),
+(u2)-[:Watched {Rating:"4"}]->(m2),
+(u3)-[:Watched {Rating:"3"}]->(m3),
+(u4)-[:Watched {Rating:"5"}]->(m4),
+(u5)-[:Watched {Rating:"2"}]->(m5),
+(u6)-[:Watched {Rating:"5"}]->(s1),
+(u7)-[:Watched {Rating:"4"}]->(s2),
+(u8)-[:Watched {Rating:"5"}]->(s3),
+(u9)-[:Watched {Rating:"3"}]->(s4),
+(u10)-[:Watched {Rating:"4"}]->(s5),
+
+// Atuação
+(m1)-[:Acted_in]->(a1),
+(m2)-[:Acted_in]->(a2),
+(m3)-[:Acted_in]->(a3),
+(s1)-[:Acted_in]->(a1),
+(s2)-[:Acted_in]->(a2),
+(s3)-[:Acted_in]->(a3),
+
+// Direção
+(s1)-[:Directed]->(d1),
+(s2)-[:Directed]->(d2),
+(m1)-[:Directed]->(d1),
+(m2)-[:Directed]->(d2);
