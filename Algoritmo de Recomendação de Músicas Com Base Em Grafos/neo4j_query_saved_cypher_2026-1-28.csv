@@ -1,0 +1,4 @@
+name,description,query,id,parentId,isFolder
+Comandos,,,0,,true
+Limpar BD 2°,,MATCH (n) CALL { WITH n DETACH DELETE n } IN TRANSACTIONS OF 50000 ROWS;,1,,false
+Limpar BD 1°,,MATCH ()-[r]->() CALL { WITH r DELETE r } IN TRANSACTIONS OF 50000 ROWS;,2,,false
