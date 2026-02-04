@@ -1,0 +1,208 @@
+MATCH (p:Profile)<-[:HAS_PROFILE]-(u:User)
+MATCH (u)-[:LIKED|COMMENTED]->(:Post)-[:TAGGED_WITH]->(t:Topic)
+RETURN p.role, COUNT(DISTINCT t) AS diversidade_tematica
+ORDER BY diversidade_tematica ASC;
+
+MATCH (p1:Profile)-[:INTERESTED_IN]->(t:Topic)<-[:INTERESTED_IN]-(p2:Profile)
+WHERE p1 <> p2
+RETURN p1.role, p2.role, COUNT(t) AS interesses_comuns
+ORDER BY interesses_comuns DESC;
+
+MATCH (p:Profile)-[:INTERESTED_IN]->(t:Topic)<-[:TAGGED_WITH]-(post:Post)
+RETURN p.role, t.name, COUNT(post) AS qtd_conteudos
+ORDER BY qtd_conteudos DESC;
+
+MATCH (p:Profile)<-[:HAS_PROFILE]-(u:User)
+MATCH (u)-[r:LIKED|COMMENTED]->(:Post)
+RETURN p.role, p.seniority, COUNT(r) AS engajamento
+ORDER BY engajamento DESC;
+
+MATCH (p:Profile {id:1}), (t:Topic {name:"Data"})
+CREATE (p)-[:INTERESTED_IN {weight: 0.9}]->(t);
+
+MATCH (p:Profile {id:2}), (t:Topic {name:"IA"})
+CREATE (p)-[:INTERESTED_IN {weight: 0.8}]->(t);
+
+MATCH (u:User {id:1}), (p:Profile {id:1})
+CREATE (u)-[:HAS_PROFILE]->(p);
+
+MATCH (u:User {id:2}), (p:Profile {id:2})
+CREATE (u)-[:HAS_PROFILE]->(p);
+
+CREATE (:Profile {
+    id: 1,
+    role: "Analista de Dados",
+    seniority: "Pleno",
+    location: "Brasil"
+}),
+(:Profile {
+    id: 2,
+    role: "Engenheiro de Software",
+    seniority: "Senior",
+    location: "Brasil"
+});
+
+MATCH (u1:User)-[:FOLLOWS]->(u2:User)
+RETURN u1.name AS seguidor, u2.name AS seguido;
+
+MATCH (u:User)-[:LIKED|COMMENTED]->(:Post)-[:TAGGED_WITH]->(t:Topic)
+RETURN t.name, COUNT(DISTINCT u) AS usuarios_engajados
+ORDER BY usuarios_engajados DESC;
+
+MATCH (u:User)-[:POSTED]->(p:Post)<-[r:LIKED|COMMENTED]-()
+RETURN u.name, COUNT(r) AS total_interacoes
+ORDER BY total_interacoes DESC;
+
+MATCH (u:User)-[r:LIKED|COMMENTED]->(p:Post)
+RETURN p.title, COUNT(r) AS engajamento
+ORDER BY engajamento DESC;
+
+// Publicações
+MATCH (u:User {id:1}), (p:Post {id:101})
+CREATE (u)-[:POSTED]->(p);
+
+MATCH (u:User {id:2}), (p:Post {id:102})
+CREATE (u)-[:POSTED]->(p);
+
+// Interações
+MATCH (u:User {id:2}), (p:Post {id:101})
+CREATE (u)-[:LIKED]->(p);
+
+MATCH (u:User {id:3}), (p:Post {id:101})
+CREATE (u)-[:COMMENTED]->(p);
+
+// Tópicos
+MATCH (p:Post {id:101}), (t:Topic {name:"Data"})
+CREATE (p)-[:TAGGED_WITH]->(t);
+
+MATCH (p:Post {id:102}), (t:Topic {name:"IA"})
+CREATE (p)-[:TAGGED_WITH]->(t);
+
+// Conexões sociais
+MATCH (u1:User {id:1}), (u2:User {id:2})
+CREATE (u1)-[:FOLLOWS]->(u2);
+
+// Usuários
+CREATE (:User {id: 1, name: "Ana"}),
+       (:User {id: 2, name: "Bruno"}),
+       (:User {id: 3, name: "Carlos"});
+
+// Tópicos / Comunidades
+CREATE (:Topic {id: 1, name: "Data"}),
+       (:Topic {id: 2, name: "IA"});
+
+// Posts
+CREATE (:Post {id: 101, title: "Power BI com Neo4j"}),
+       (:Post {id: 102, title: "IA Generativa no dia a dia"});
+
+MATCH (n) DETACH DELETE n;
+
+:connect
+
+// Usuários
+CREATE (:User {id: 1, name: "Ana"}),
+       (:User {id: 2, name: "Bruno"}),
+       (:User {id: 3, name: "Carlos"});
+
+// Tópicos / Comunidades
+CREATE (:Topic {id: 1, name: "Data"}),
+       (:Topic {id: 2, name: "IA"});
+
+// Posts
+CREATE (:Post {id: 101, title: "Power BI com Neo4j"}),
+       (:Post {id: 102, title: "IA Generativa no dia a dia"});
+
+MATCH (n)-[r]->(m)
+RETURN n, r, m
+LIMIT 1000;
+
+MATCH (n)
+RETURN n
+LIMIT 1000;
+
+SHOW;
+
+MATCH (n:Artista) RETURN n LIMIT 25;
+
+MATCH (n) RETURN n LIMIT 25;
+
+MATCH (:Usuario)-[r:ESCUTOU]->(m:Musica)
+RETURN m.titulo, sum(r.vezes) AS total_execucoes
+ORDER BY total_execucoes DESC;
+
+MATCH (u1:Usuario {nome:"Allison"})-[:ESCUTOU]->(m:Musica)<-[:ESCUTOU]-(u2:Usuario)
+WHERE u1 <> u2
+MATCH (u2)-[:ESCUTOU]->(rec:Musica)
+WHERE NOT (u1)-[:ESCUTOU]->(rec)
+RETURN rec.titulo AS recomendacao, count(*) AS relevancia
+ORDER BY relevancia DESC;
+
+MATCH (u:Usuario {nome:"Allison"})-[:ESCUTOU]->(:Musica)-[:TEM_GENERO]->(g:Genero)
+MATCH (m:Musica)-[:TEM_GENERO]->(g)
+WHERE NOT (u)-[:ESCUTOU|CURTIU]->(m)
+RETURN m.titulo, g.nome
+ORDER BY rand()
+LIMIT 5;
+
+MATCH (u:Usuario {nome:"Allison"})-[:SEGUE]->(a:Artista)<-[:PERTENCE_A]-(m:Musica)
+WHERE NOT (u)-[:ESCUTOU|CURTIU]->(m)
+RETURN m.titulo AS recomendacao, a.nome AS artista;
+
+MATCH (u:Usuario {nome:"Allison"}), (a:Artista {nome:"Coldplay"})
+CREATE (u)-[:SEGUE {desde:"2025-08-01"}]->(a);
+
+MATCH (u:Usuario {nome:"Allison"}), (a:Artista {nome:"Coldplay"})
+CREATE (u)-[:SEGUE {desde:"2025-08-01"}]->(a);
+
+MATCH (u:Usuario {nome:"Allison"})-[:SEGUE]->(a:Artista)<-[:PERTENCE_A]-(m:Musica)
+WHERE NOT (u)-[:ESCUTOU|CURTIU]->(m)
+RETURN m.titulo AS recomendacao, a.nome AS artista;
+
+MATCH (u:Usuario {nome:"Allison"}), (a:Artista {nome:"Coldplay"})
+CREATE (u)-[:SEGUE {desde:"2025-08-01"}]->(a);
+
+MATCH (u:Usuario {nome:"Allison"}), (m:Musica {titulo:"Yellow"})
+CREATE (u)-[:ESCUTOU {vezes: 15, ultima:"2026-01-20"}]->(m);
+
+MATCH (u:Usuario {nome:"Allison"}), (m:Musica {titulo:"Viva La Vida"})
+CREATE (u)-[:CURTIU {data:"2026-01-22"}]->(m);
+
+MATCH (u:Usuario {nome:"Maria"}), (m:Musica {titulo:"Believer"})
+CREATE (u)-[:ESCUTOU {vezes: 20}]->(m);
+
+MATCH (m:Musica {titulo:"Yellow"}), (a:Artista {nome:"Coldplay"})
+CREATE (m)-[:PERTENCE_A]->(a);
+
+MATCH (m:Musica {titulo:"Viva La Vida"}), (a:Artista {nome:"Coldplay"})
+CREATE (m)-[:PERTENCE_A]->(a);
+
+MATCH (m:Musica {titulo:"Believer"}), (a:Artista {nome:"Imagine Dragons"})
+CREATE (m)-[:PERTENCE_A]->(a);
+
+MATCH (m:Musica {titulo:"Yellow"}), (g:Genero {nome:"Rock"})
+CREATE (m)-[:TEM_GENERO]->(g);
+
+MATCH (m:Musica {titulo:"Believer"}), (g:Genero {nome:"Rock"})
+CREATE (m)-[:TEM_GENERO]->(g);
+
+// Usuários
+CREATE (:Usuario {id: 1, nome: "Allison"});
+CREATE (:Usuario {id: 2, nome: "Maria"});
+CREATE (:Usuario {id: 3, nome: "João"});
+
+// Artistas
+CREATE (:Artista {id: 10, nome: "Coldplay"});
+CREATE (:Artista {id: 11, nome: "Imagine Dragons"});
+
+// Gêneros
+CREATE (:Genero {id: 20, nome: "Rock"});
+CREATE (:Genero {id: 21, nome: "Pop"});
+
+// Músicas
+CREATE (:Musica {id: 100, titulo: "Yellow", duracao: 260});
+CREATE (:Musica {id: 101, titulo: "Believer", duracao: 204});
+CREATE (:Musica {id: 102, titulo: "Viva La Vida", duracao: 242});
+
+MATCH (n) DETACH DELETE n;
+
+:connect
